@@ -1,10 +1,17 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:supertokens/supertokens.dart';
+import 'package:supertokensfluttertry/dio.dart';
 import 'package:supertokensfluttertry/homeScreen.dart';
 import 'package:supertokens/http.dart' as http;
 
 void main() {
-  SuperTokens.init(apiDomain: 'http://192.168.29.177:3001');
+  SuperTokens.init(
+      apiDomain: 'http://192.168.29.177:3001',
+      preAPIHook: (_, req) {
+        req.headers.addAll({'appId': 'random#app#Id'});
+        return req;
+      });
   runApp(const MyApp());
 }
 
@@ -127,11 +134,9 @@ class _MyHomePageState extends State<MyHomePage> {
               style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(Colors.orange)),
               onPressed: () async {
-                Uri uri = Uri.parse('http://192.168.29.177:3001/signIn');
-                await http.post(
-                  uri,
-                  headers: {'content-type': 'application/json'},
-                );
+                String url = 'http://192.168.29.177:3001/';
+                Dio dio = setupDio(url);
+                await dio.post('signIn');
                 Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => HomeScreen()));
               },
